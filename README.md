@@ -17,7 +17,7 @@ XD-B4800の5回測定では、Thinking OFF時のTTFT中央値は23.711秒、TTFT
 
 ## ビルド
 
-devkitSH4とlibdataplusが必要です。依存物はこのrepoに同梱しません。
+devkitSH4と[`libdataplus`](https://github.com/brijohn/libdataplus)が必要です。依存物はこのrepoに同梱していないため、それぞれの配布元から取得してください。
 
 ```bash
 export DEVKITPRO="$HOME/toolchains/devkitPro"
@@ -27,11 +27,18 @@ make -C apps/exllm
 make -C apps/exllm-benchmark
 ```
 
-`libdataplus`全体の再配布条件が明示されるまで、このrepoはソースを公開し、静的リンク済みD01は配布しません。インストール中はUSBを切断しないでください。
+ビルド済みD01ではなくソースを公開しています。必要な依存物は上流repoから直接取得してビルドしてください。インストール中はUSBを切断しないでください。
 
 ## ライセンス
 
-GPL-2.0。Gnuboy EX由来の最小libcと[`brain-hackers/exword-template`](https://github.com/brain-hackers/exword-template)を基礎にしています。モデルはApache-2.0で別配布です。ゲームROM、セーブデータ、CASIO firmware、端末認証情報は含みません。
+GPL-2.0。Gnuboy EX由来の最小libcと[`brain-hackers/exword-template`](https://github.com/brain-hackers/exword-template)を基礎にしています。モデルはApache-2.0で別配布です。ゲームROM、セーブデータ、CASIO firmware、端末認証情報は含みません。再配布や派生版の公開はライセンスに従って自由に行えますが、活用状況を把握するため、公開時に作者へ一報いただけると幸いです（連絡は利用条件ではありません）。
+
+## 関連プロジェクト
+
+- [`EXLLM`](https://github.com/ToTo-40417/exllm) — 学習・評価コードと参照ランタイム
+- [`ToTo-40417/EXLLM`](https://huggingface.co/ToTo-40417/EXLLM) — 5Mモデル配布
+- [`exword-hardware-dump`](https://github.com/ToTo-40417/exword-hardware-dump) — EX-word実機情報の取得
+- [`exword-gnuboy-save-importer`](https://github.com/ToTo-40417/exword-gnuboy-save-importer) — Gnuboyセーブデータ転送
 
 ## English
 
@@ -39,6 +46,8 @@ EXLLM for EX-word runs the EXLLM 5M Japanese language model fully offline on CAS
 
 This repository contains the stable `XLLMI` app and the separate `XLMBM` benchmark build. The model is distributed separately from [`ToTo-40417/EXLLM`](https://huggingface.co/ToTo-40417/EXLLM). On the physical device, median TTFT was 23.711 seconds and post-TTFT generation was 0.52–0.55 token/s with Thinking disabled.
 
-devkitSH4 and libdataplus are required but not bundled. Prebuilt D01 files are withheld until libdataplus redistribution terms are explicit. Do not disconnect USB while installing.
+devkitSH4 and [`libdataplus`](https://github.com/brijohn/libdataplus) are required but not bundled. Obtain each dependency directly from its upstream repository and build the apps from source. Do not disconnect USB while installing.
 
-GPL-2.0 source. The Apache-2.0 model, game ROMs, save data, CASIO firmware, and device authentication data are not included.
+GPL-2.0 source. The Apache-2.0 model, game ROMs, save data, CASIO firmware, and device authentication data are not included. Redistribution and derivative releases are welcome under the license. If you publish one, a brief note to the author would be appreciated, but is not a condition of use.
+
+Related projects: [`EXLLM`](https://github.com/ToTo-40417/exllm), the [`EXLLM model`](https://huggingface.co/ToTo-40417/EXLLM), [`exword-hardware-dump`](https://github.com/ToTo-40417/exword-hardware-dump), and [`exword-gnuboy-save-importer`](https://github.com/ToTo-40417/exword-gnuboy-save-importer).
