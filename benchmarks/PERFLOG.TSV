@@ -1,0 +1,5 @@
+2026-09-24T22:17:00	think=0	in=8	out=24	ttft_ms=12705	total_ms=54145	tok_s_x100=55	prompt=こんにちは
+2026-09-24T22:18:23	think=0	in=18	out=10	ttft_ms=28440	total_ms=45733	tok_s_x100=52	prompt=あなたは何というモデルですか？
+2026-09-24T22:19:57	think=0	in=13	out=34	ttft_ms=20566	total_ms=79608	tok_s_x100=55	prompt=RAMとは何ですか？
+2026-09-24T22:21:18	think=0	in=15	out=14	ttft_ms=23711	total_ms=47755	tok_s_x100=54	prompt=オフラインとは何ですか？
+2026-09-24T22:23:36	think=0	in=16	out=27	ttft_ms=25286	total_ms=72161	tok_s_x100=55	prompt=EXLLMとはなんですか？
