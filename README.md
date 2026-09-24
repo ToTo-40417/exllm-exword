@@ -9,7 +9,7 @@ EXLLM for EX-wordは、小型日本語LLM「EXLLM 5M」をCASIO EX-word上でオ
 - `XLLMI` — 通常利用向け安定版
 - `XLMBM` — TTFT・総時間・tokens/sを記録する計測版
 
-モデルは別配布です。`model.q12`を[`ToTo-40417/EXLLM`](https://huggingface.co/ToTo-40417/EXLLM)から取得し、本体内蔵領域の`MODELS/model.q12`へ配置します。
+電子辞書用`model.q12`は別配布です。Hugging Face版の公開準備が完了するまでは、本repoのソースと[`exllm`](https://github.com/ToTo-40417/exllm)のモデルを参照してください。端末では`model.q12`を本体内蔵領域の`MODELS/model.q12`へ配置します。
 
 ## 実機結果
 
@@ -36,7 +36,7 @@ GPL-2.0。Gnuboy EX由来の最小libcと[`brain-hackers/exword-template`](https
 ## 関連プロジェクト
 
 - [`EXLLM`](https://github.com/ToTo-40417/exllm) — 学習・評価コードと参照ランタイム
-- [`ToTo-40417/EXLLM`](https://huggingface.co/ToTo-40417/EXLLM) — 5Mモデル配布
+- Hugging Face版 — 公開準備中
 - [`exword-hardware-dump`](https://github.com/ToTo-40417/exword-hardware-dump) — EX-word実機情報の取得
 - [`exword-gnuboy-save-importer`](https://github.com/ToTo-40417/exword-gnuboy-save-importer) — Gnuboyセーブデータ転送
 
@@ -44,10 +44,10 @@ GPL-2.0。Gnuboy EX由来の最小libcと[`brain-hackers/exword-template`](https
 
 EXLLM for EX-word runs the EXLLM 5M Japanese language model fully offline on CASIO EX-word hardware. Keyboard input and token-by-token generation have been verified on an XD-B4800 (DATAPLUS 6).
 
-This repository contains the stable `XLLMI` app and the separate `XLMBM` benchmark build. The model is distributed separately from [`ToTo-40417/EXLLM`](https://huggingface.co/ToTo-40417/EXLLM). On the physical device, median TTFT was 23.711 seconds and post-TTFT generation was 0.52–0.55 token/s with Thinking disabled.
+This repository contains the stable `XLLMI` app and the separate `XLMBM` benchmark build. The device-ready `model.q12` is distributed separately; its Hugging Face release is still being prepared. Until then, refer to this source and the model files in [`exllm`](https://github.com/ToTo-40417/exllm). On the physical device, median TTFT was 23.711 seconds and post-TTFT generation was 0.52–0.55 token/s with Thinking disabled.
 
 devkitSH4 and [`libdataplus`](https://github.com/brijohn/libdataplus) are required but not bundled. Obtain each dependency directly from its upstream repository and build the apps from source. Do not disconnect USB while installing.
 
 GPL-2.0 source. The Apache-2.0 model, game ROMs, save data, CASIO firmware, and device authentication data are not included. Redistribution and derivative releases are welcome under the license. If you publish one, a brief note to the author would be appreciated, but is not a condition of use.
 
-Related projects: [`EXLLM`](https://github.com/ToTo-40417/exllm), the [`EXLLM model`](https://huggingface.co/ToTo-40417/EXLLM), [`exword-hardware-dump`](https://github.com/ToTo-40417/exword-hardware-dump), and [`exword-gnuboy-save-importer`](https://github.com/ToTo-40417/exword-gnuboy-save-importer).
+Related projects: [`EXLLM`](https://github.com/ToTo-40417/exllm), [`exword-hardware-dump`](https://github.com/ToTo-40417/exword-hardware-dump), and [`exword-gnuboy-save-importer`](https://github.com/ToTo-40417/exword-gnuboy-save-importer). The Hugging Face release is being prepared.
