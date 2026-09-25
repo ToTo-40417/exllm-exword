@@ -15,6 +15,8 @@
 #include "screenshot.h"
 #define SW 528
 #define SH 320
+#define FINAL_MAX_TOKENS 48
+#define THINK_DRAFT_MAX 10
 typedef struct { unsigned long rows,cols,nscale,nbytes; const unsigned char *scale,*data; } Tensor;
 typedef struct { Tensor tok,pos,n1[LAYERS],qkv[LAYERS],proj[LAYERS],n2[LAYERS],fc1[LAYERS],fc2[LAYERS],norm; } Model;
 typedef struct { char sig[12]; char model[4]; unsigned long magic,nor_size; } RomHeader;
@@ -49,6 +51,9 @@ static void append_token(char *out,unsigned int *len,unsigned short tok){unsigne
 static void probe_memory(void){void *p[28],*large;unsigned int n=0,i;while(n<28&&(p[n]=memmgr_alloc(256UL*1024UL))!=0){((unsigned char*)p[n])[0]=0x5a;((unsigned char*)p[n])[256UL*1024UL-1]=0xa5;n++;}for(i=n;i>0;i--)memmgr_free(p[i-1]);probe_free_kib=n*256UL;if(n>1){large=memmgr_alloc((n-1)*256UL*1024UL);if(large){((unsigned char*)large)[0]=0x3c;((unsigned char*)large)[(n-1)*256UL*1024UL-1]=0xc3;memmgr_free(large);probe_free_kib=(n-1)*256UL;}else probe_free_kib=0;}}
 static void info_screen(void){char a[64];RomHeader *rh=(RomHeader*)0x8001ff80;unsigned long pvr=*(volatile unsigned long*)0xff000030,prr=*(volatile unsigned long*)0xff000044,frqcr=*(volatile unsigned long*)0xa4150000;clear();title();set_pen(create_rgb16(255,255,0));render_text_jp(12,39,"端末・モデル情報");set_pen(create_rgb16(255,255,255));sprintf(a,"Model: %u params",(unsigned int)EX_MODEL_PARAMS);render_text(12,68,a);sprintf(a,"File: %u KiB / KV: %u KiB",(unsigned int)(EX_MODEL_BYTES/1024),(unsigned int)(LAYERS*CTX*D*4/1024));render_text(12,94,a);sprintf(a,"Free contiguous: %u KiB",(unsigned int)probe_free_kib);render_text(12,120,a);if(!memcmp(rh->sig,"CASIODICS",9))sprintf(a,"ROM model: %.4s / NOR: %08x",rh->model,(unsigned int)rh->nor_size);else sprintf(a,"ROM header: unavailable");render_text(12,158,a);sprintf(a,"PVR: %08x  PRR: %08x",(unsigned int)pvr,(unsigned int)prr);render_text(12,184,a);sprintf(a,"FRQCR: %08x",(unsigned int)frqcr);render_text(12,210,a);set_pen(create_rgb16(0,255,0));render_text_jp(12,292,"決定:質問へ 戻る:終了 履歴:画面保存");lcdc_copy_vram();}
 static int tokenize_prompt(const char *text,unsigned short *ids,int cap){const unsigned char *p=(const unsigned char*)text;int n=0;if(cap<4)return -1;ids[n++]=EX_BOS;ids[n++]=EX_USER;while(*p){unsigned int bytes=(*p<0x80)?1:((*p&0xe0)==0xc0?2:((*p&0xf0)==0xe0?3:4));unsigned int i,j,found=EX_CHAR_COUNT;for(i=0;i<EX_CHAR_COUNT;i++){unsigned int a=ex_char_offsets[i],b=ex_char_offsets[i+1];if(b-a!=bytes)continue;for(j=0;j<bytes&&ex_char_bytes[a+j]==p[j];j++){}if(j==bytes){found=i;break;}}if(found<EX_CHAR_COUNT){if(n>=cap-1)return -1;ids[n++]=256+found;}else{for(i=0;i<bytes;i++){if(n>=cap-1)return -1;ids[n++]=p[i];}}p+=bytes;}ids[n++]=EX_ASSIST;return n;}
+static int token_equals(unsigned short tok,const char *s){unsigned int i,a,b,n=(unsigned int)strlen(s);if(tok<256)return n==1&&(unsigned char)s[0]==tok;if(tok>=256+EX_CHAR_COUNT)return 0;a=ex_char_offsets[tok-256];b=ex_char_offsets[tok-255];if(b-a!=n)return 0;for(i=0;i<n;i++)if(ex_char_bytes[a+i]!=(unsigned char)s[i])return 0;return 1;}
+static int draft_stop(unsigned short tok){return token_equals(tok,"。")||token_equals(tok,"！")||token_equals(tok,"？")||token_equals(tok,"!")||token_equals(tok,"?");}
+static unsigned int thinking_prompt(const unsigned short *prompt,unsigned int prompt_len,const unsigned short *draft,unsigned int draft_len,unsigned short *out){unsigned short suffix[16];unsigned int i,n=0,qcount,keep,start,payload,budget;int sn=tokenize_prompt("\n回答:",suffix,16);if(sn<3)return 0;payload=(unsigned int)sn-3;qcount=prompt_len>3?prompt_len-3:0;budget=CTX-FINAL_MAX_TOKENS;if(budget<=3+payload+draft_len)return 0;keep=budget-3-payload-draft_len;if(keep>qcount)keep=qcount;start=2+qcount-keep;while(keep&&prompt[start]>=0x80&&prompt[start]<=0xbf){start++;keep--;}out[n++]=EX_BOS;out[n++]=EX_USER;for(i=0;i<keep;i++)out[n++]=prompt[start+i];for(i=0;i<payload;i++)out[n++]=suffix[2+i];for(i=0;i<draft_len;i++)out[n++]=draft[i];out[n++]=EX_ASSIST;return n;}
 static void menu(unsigned int sel,int thinking){static const char *q[]={"自由入力：キーボードから質問","例題：こんにちは","例題：あなたは何というモデルですか？","例題：RAMとは何ですか？","例題：オフラインとは何ですか？","端末情報：メモリ・モデル"};unsigned int i;clear();title();set_pen(create_rgb16(255,255,255));render_text_jp(12,39,"機能・例題を選んでください");for(i=0;i<6;i++){set_pen(i==sel?create_rgb16(255,255,0):create_rgb16(180,180,180));render_text_jp(24,65+i*30,q[i]);}set_pen(sel==6?create_rgb16(255,255,0):create_rgb16(180,180,180));render_text(24,245,thinking?"Thinking ON":"Thinking OFF");set_pen(create_rgb16(0,255,0));render_text_jp(12,282,"上下:選択 決定:実行 戻る:終了 履歴:画面保存");lcdc_copy_vram();}
 static void conversation_screen(const char *question,const char *answer,int generating,unsigned int tokens){char st[40];clear();title();set_pen(create_rgb16(255,255,0));render_text_jp(12,39,"質問");set_pen(create_rgb16(255,255,255));render_text_jp_wrapped_clipped(12,60,500,116,question);set_pen(create_rgb16(70,70,70));draw_line(12,119,516,119);set_pen(create_rgb16(255,255,0));render_text_jp(12,130,generating==2?"考えています":generating?"回答を生成中":"回答");set_pen(create_rgb16(255,255,255));render_text_jp_wrapped_clipped(12,153,500,282,answer);if(generating){sprintf(st,"%u tokens / HISTORY: screenshot",tokens);set_pen(create_rgb16(0,255,255));render_text(12,292,st);}else{set_pen(create_rgb16(0,255,0));render_text_jp(12,292,"決定:質問へ 戻る:終了 履歴:画面保存");}lcdc_copy_vram();}
 static int utf8_complete(const char *s){const unsigned char *p=(const unsigned char*)s;unsigned int need=0;while(*p){if(!need){if(*p<0x80){}else if((*p&0xe0)==0xc0)need=1;else if((*p&0xf0)==0xe0)need=2;else if((*p&0xf8)==0xf0)need=3;else return 0;}else{if((*p&0xc0)!=0x80)return 0;need--;}p++;}return need==0;}
@@ -70,7 +75,7 @@ int main(void *ptr){
    if(get_key_state(KEY_DOWN)){release(KEY_DOWN);sel=(sel+1)%7;menu(sel,thinking);}
    if(get_key_state(KEY_ENTER)){
     unsigned int i,pos=0,n=0;unsigned short tok,*prompt;unsigned int prompt_len;
-    unsigned short custom_ids[98];char question[192],out[512],draft[32];release(KEY_ENTER);
+    unsigned short custom_ids[98],draft_ids[THINK_DRAFT_MAX],final_ids[CTX];char question[192],out[512],draft[64];release(KEY_ENTER);
     if(sel==6){thinking=!thinking;menu(sel,thinking);continue;}
     if(sel==5){
      info_screen();
@@ -85,15 +90,16 @@ int main(void *ptr){
     }else{strcpy(question,example_questions[sel-1]);prompt=(unsigned short*)ex_prompts[sel-1];prompt_len=ex_prompt_lengths[sel-1];}
     draft[0]=0;
     if(thinking){
-     unsigned int dn=0;conversation_screen(question,"",2,0);
+     unsigned int dn=0,draft_len=0;conversation_screen(question,"",2,0);
      memset(key_cache,0,LAYERS*CTX*D*2);memset(val_cache,0,LAYERS*CTX*D*2);
      for(i=0;i<prompt_len&&pos<CTX;i++,pos++)forward(&m,prompt[i],pos);
-     for(i=0;i<4&&pos<CTX;i++,pos++){tok=greedy(&m);if(tok==EX_EOS)break;append_token(draft,&dn,tok);forward(&m,tok,pos);if(utf8_complete(draft)){conversation_screen(question,"",2,i+1);capture_if_requested();}}
+     for(i=0;i<THINK_DRAFT_MAX&&pos<CTX;i++,pos++){tok=greedy(&m);if(tok==EX_EOS)break;draft_ids[draft_len++]=tok;append_token(draft,&dn,tok);forward(&m,tok,pos);if(utf8_complete(draft)){conversation_screen(question,"",2,draft_len);capture_if_requested();}if(draft_stop(tok))break;}
+     prompt_len=thinking_prompt(prompt,prompt_len,draft_ids,draft_len,final_ids);prompt=final_ids;
     }
     pos=0;out[0]=0;conversation_screen(question,"",1,0);
     memset(key_cache,0,LAYERS*CTX*D*2);memset(val_cache,0,LAYERS*CTX*D*2);
-    for(i=0;i<prompt_len;i++,pos++)forward(&m,prompt[i],pos);
-    for(i=0;i<(thinking?32U:48U)&&pos<CTX;i++,pos++){
+    for(i=0;i<prompt_len&&pos<CTX;i++,pos++)forward(&m,prompt[i],pos);
+    for(i=0;i<FINAL_MAX_TOKENS&&pos<CTX;i++,pos++){
      tok=greedy(&m);if(tok==EX_EOS)break;append_token(out,&n,tok);forward(&m,tok,pos);
      if(utf8_complete(out)){conversation_screen(question,out,1,i+1);capture_if_requested();}
     }
