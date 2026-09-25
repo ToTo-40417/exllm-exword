@@ -23,6 +23,46 @@ XD-B4800の5回測定では、Thinking OFF時のTTFT中央値は23.711秒、TTFT
 
 Thinking ONでは最大10 tokenのdraftを先に生成し、そのtoken列を`元の質問 + "\n回答:" + draft`という単一USER入力へ直接組み込んで再prefillします。draftはEOSまたは文末記号で早期終了し、最終回答にはThinking OFFと同じ最大48 tokenを確保します。128 tokenのcontextを超える場合は、最終回答、draft、元質問の順で領域を優先し、必要な分だけ元質問の左側を省略します。
 
+## 操作方法
+
+### 1. 機能または例題を選ぶ
+
+![EXLLMのメニュー画面](docs/images/exllm-menu.png)
+
+`EXLLM`を起動するとメニューが表示されます。上下キーで項目を選び、「決定」で実行します。
+
+- `自由入力`：本体キーボードから質問を入力
+- `例題`：収録済みの4問をそのまま実行
+- `端末情報`：モデル容量、KV cache、連続メモリ、本体識別情報を表示
+- `Thinking ON/OFF`：「決定」で切り替え。初期値はOFF
+- `戻る`：アプリを終了
+- `履歴`：表示中の画面を保存
+
+### 2. キーボードから質問する
+
+![EXLLMの自由入力画面](docs/images/exllm-input.png)
+
+自由入力はローマ字入力のかな変換から始まります。例えば`OHAYOU`と入力すると「おはよう」になります。
+
+| キー | 動作 |
+|---|---|
+| 文字キー | かなまたは英字を入力 |
+| `SHIFT` | `かな` / `ABC`を切り替え |
+| `記号` | `？ 。 、 ！ ー`を順に切り替え |
+| 右方向キー | 空白を入力 |
+| `削除` | 末尾の1文字を削除 |
+| `決定` | 入力した質問で推論開始 |
+| `戻る` | 入力を中止してメニューへ戻る |
+| `履歴` | 表示中の画面を保存 |
+
+### 3. 回答を確認する
+
+![EXLLMの回答画面](docs/images/exllm-answer.png)
+
+推論中は生成されたトークンが順次表示され、完了後も質問と回答が上下に分かれて残ります。「決定」で次の質問へ戻り、「戻る」で終了します。
+
+「履歴」を押すと、表示中の528×320画面を日時付きBMPとして本体内蔵領域の`XLLMI/_USER/YYYYMMDD/`へ追加保存します。画像はUSB接続時にlibexwordから回収できます。
+
 ## ビルド
 
 devkitSH4と[`libdataplus`](https://github.com/brijohn/libdataplus)が必要です。依存物はこのrepoに同梱していないため、それぞれの配布元から取得してください。
@@ -61,6 +101,20 @@ Based on the supported scope of [`exword-template`](https://github.com/brain-hac
 This repository contains the stable `XLLMI` app and the separate `XLMBM` benchmark build. The device-ready [`model.q12`](https://huggingface.co/ToTo-40417/EXLLM/tree/main/weights) is distributed on Hugging Face; place it at `MODELS/model.q12` in the device's internal storage. Model source and training instructions are available in [`exllm`](https://github.com/ToTo-40417/exllm). On the physical device, median TTFT was 23.711 seconds and post-TTFT generation was 0.52–0.55 token/s with Thinking disabled.
 
 With Thinking enabled, the runtime generates a draft of up to 10 tokens and reuses those exact token IDs in a second single-turn USER prompt: `original question + "\n回答:" + draft`. EOS and sentence-ending punctuation may stop the draft early. The final pass keeps the same 48-token generation limit as normal mode. Within the fixed 128-token context, final-answer space takes priority, followed by the draft; the left side of an overlong original question is trimmed only when required.
+
+### Operation
+
+![EXLLM menu](docs/images/exllm-menu.png)
+
+Use Up/Down to select free input, one of four example questions, device information, or `Thinking ON/OFF`, then press Enter. Thinking defaults to OFF. Back exits the application, and History saves the currently displayed screen.
+
+![EXLLM free-input screen](docs/images/exllm-input.png)
+
+Free input starts in romaji-to-kana mode. Letter keys enter text; Shift switches between kana and `ABC`; repeated Symbol presses cycle through `？ 。 、 ！ ー`; Right inserts a space; Delete removes one character; Enter starts inference; and Back cancels input.
+
+![EXLLM answer screen](docs/images/exllm-answer.png)
+
+Generated tokens appear progressively. The completed screen keeps the question above the divider and the answer below it. Enter returns to the next question and Back exits. History stores a timestamped 528×320 BMP under `XLLMI/_USER/YYYYMMDD/` in internal storage; screenshots can be retrieved over USB with libexword.
 
 devkitSH4 and [`libdataplus`](https://github.com/brijohn/libdataplus) are required but not bundled. Obtain each dependency directly from its upstream repository and build the apps from source. Do not disconnect USB while installing.
 
