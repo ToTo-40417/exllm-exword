@@ -89,6 +89,7 @@ GPL-2.0。Gnuboy EX由来の最小libcと[`brain-hackers/exword-template`](https
 - [Hugging Faceモデル・配布用重み](https://huggingface.co/ToTo-40417/EXLLM)
 - [`exword-hardware-dump`](https://github.com/ToTo-40417/exword-hardware-dump) — EX-word実機情報の取得
 - [`exword-gnuboy-save-importer`](https://github.com/ToTo-40417/exword-gnuboy-save-importer) — Gnuboyセーブデータ転送
+- [Note記事：高校生用の電子辞書でLLMを動かしてみた ―0.024GHz/0.016GB](https://note.com/joyful_beetle869/n/nbd1e26679b78)
 
 ## English
 
@@ -124,4 +125,4 @@ devkitSH4 and [`libdataplus`](https://github.com/brijohn/libdataplus) are requir
 
 GPL-2.0 source. The Apache-2.0 model, game ROMs, save data, CASIO firmware, and device authentication data are not included. Redistribution and derivative releases are welcome under the license. If you publish one, a brief note to the author would be appreciated, but is not a condition of use.
 
-Related projects: [`EXLLM`](https://github.com/ToTo-40417/exllm), [`EXLLM on Hugging Face`](https://huggingface.co/ToTo-40417/EXLLM), [`exword-hardware-dump`](https://github.com/ToTo-40417/exword-hardware-dump), and [`exword-gnuboy-save-importer`](https://github.com/ToTo-40417/exword-gnuboy-save-importer).
+Related projects: [`EXLLM`](https://github.com/ToTo-40417/exllm), [`EXLLM on Hugging Face`](https://huggingface.co/ToTo-40417/EXLLM), [`exword-hardware-dump`](https://github.com/ToTo-40417/exword-hardware-dump), and [`exword-gnuboy-save-importer`](https://github.com/ToTo-40417/exword-gnuboy-save-importer). See also the Japanese Note article, “[高校生用の電子辞書でLLMを動かしてみた ―0.024GHz/0.016GB](https://note.com/joyful_beetle869/n/nbd1e26679b78).”
