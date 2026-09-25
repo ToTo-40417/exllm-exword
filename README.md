@@ -59,9 +59,9 @@ Thinking ONでは最大10 tokenのdraftを先に生成し、そのtoken列を`�
 
 ### 3. 回答を確認する
 
-![EXLLMの回答画面](docs/images/exllm-answer.png)
+![約0.5 token/秒で回答を生成するEXLLM](docs/images/exllm-generation.gif)
 
-推論中は生成されたトークンが順次表示され、完了後も質問と回答が上下に分かれて残ります。「決定」で次の質問へ戻り、「戻る」で終了します。
+推論中は生成されたトークンが順次表示され、完了後も質問と回答が上下に分かれて残ります。上のGIFは実機スクリーンショットを用い、実測した0.52〜0.55 token/秒の表示間隔を30秒で再現しています。「決定」で次の質問へ戻り、「戻る」で終了します。
 
 「履歴」を押すと、表示中の528×320画面を日時付きBMPとして本体内蔵領域の`XLLMI/_USER/YYYYMMDD/`へ追加保存します。画像はUSB接続時にlibexwordから回収できます。
 
@@ -116,9 +116,9 @@ Use Up/Down to select free input, one of four example questions, device informat
 
 Free input starts in romaji-to-kana mode. Letter keys enter text; Shift switches between kana and `ABC`; repeated Symbol presses cycle through `？ 。 、 ！ ー`; Right inserts a space; Delete removes one character; Enter starts inference; and Back cancels input.
 
-![EXLLM answer screen](docs/images/exllm-answer.png)
+![EXLLM generating at approximately 0.5 token/s](docs/images/exllm-generation.gif)
 
-Generated tokens appear progressively. The completed screen keeps the question above the divider and the answer below it. Enter returns to the next question and Back exits. History stores a timestamped 528×320 BMP under `XLLMI/_USER/YYYYMMDD/` in internal storage; screenshots can be retrieved over USB with libexword.
+Generated tokens appear progressively. The GIF above uses a physical-device screenshot and reproduces the measured 0.52–0.55 token/s display interval in 30 seconds. The completed screen keeps the question above the divider and the answer below it. Enter returns to the next question and Back exits. History stores a timestamped 528×320 BMP under `XLLMI/_USER/YYYYMMDD/` in internal storage; screenshots can be retrieved over USB with libexword.
 
 devkitSH4 and [`libdataplus`](https://github.com/brijohn/libdataplus) are required but not bundled. Obtain each dependency directly from its upstream repository and build the apps from source. Do not disconnect USB while installing.
 
