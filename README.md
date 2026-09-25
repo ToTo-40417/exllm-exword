@@ -4,7 +4,7 @@
 
 EXLLM for EX-wordは、小型日本語LLM「EXLLM 5M」をCASIO EX-word上でオフライン実行するhomebrewアプリです。XD-B4800（DATAPLUS 6）実機で、キーボード入力から回答生成まで確認しています。
 
-ここでのLLMは、Little Language Modelです。
+LLMとは、Little Language Modelの略です。
 
 現行版は`v1.1.0`です。Thinking ONで生成したdraft tokenを最終推論へ再利用する修正を収録しています。
 
