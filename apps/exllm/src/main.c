@@ -28,7 +28,7 @@ static unsigned long u32(const unsigned char *p){return p[0]|((unsigned long)p[1
 static long s32(const unsigned char *p){return (long)u32(p);} static short s16(const unsigned char *p){return (short)(p[0]|((unsigned short)p[1]<<8));}
 static short sat(long v){if(v>32767)return 32767;if(v<-32768)return -32768;return (short)v;}
 static void clear(void){set_pen(create_rgb16(0,0,0));draw_rect(0,0,SW,SH);}
-static void title(void){set_pen(create_rgb16(0,255,255));render_text(12,12,"EXLLM v1.0.0");}
+static void title(void){set_pen(create_rgb16(0,255,255));render_text(12,12,"EXLLM v1.1.0");}
 static void screen(const char *jp,const char *en,unsigned short c){clear();title();set_pen(c);render_text_jp(12,52,jp);if(en){set_pen(create_rgb16(255,255,255));render_text(12,82,en);}lcdc_copy_vram();}
 static int load_model(Model *m){
  static const unsigned char magic[8]={'E','X','Q','1','2',0,0,0}; Tensor *order[EX_TENSOR_COUNT]; unsigned long size,off=16,count,i,l; int fd;
