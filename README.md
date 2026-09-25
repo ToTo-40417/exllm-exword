@@ -6,6 +6,10 @@ EXLLM for EX-wordは、小型日本語LLM「EXLLM 5M」をCASIO EX-word上でオ
 
 現行版は`v1.1.0`です。Thinking ONで生成したdraft tokenを最終推論へ再利用する修正を収録しています。
 
+## 対応環境
+
+[`exword-template`](https://github.com/brain-hackers/exword-template)とlibexwordの対応範囲から、DATAPLUS 5 / 6 / 7を理論上の対象としています。実機で起動・キー入力・推論・ベンチマークを確認したのはXD-B4800（DATAPLUS 6）のみです。他機種での動作は保証せず、DATAPLUS 5 / 7およびそれ以外の世代は実機未確認です。
+
 ## 収録アプリ
 
 - `XLLMI` — 通常利用向け安定版
@@ -49,6 +53,10 @@ GPL-2.0。Gnuboy EX由来の最小libcと[`brain-hackers/exword-template`](https
 EXLLM for EX-word runs the EXLLM 5M Japanese language model fully offline on CASIO EX-word hardware. Keyboard input and token-by-token generation have been verified on an XD-B4800 (DATAPLUS 6).
 
 The current version is `v1.1.0`, including the fix that feeds Thinking-mode draft tokens into the final inference pass.
+
+### Compatibility
+
+Based on the supported scope of [`exword-template`](https://github.com/brain-hackers/exword-template) and the libexword installation path, DATAPLUS 5, 6, and 7 are theoretical targets. Boot, keyboard input, inference, and benchmark operation have been tested only on an XD-B4800 (DATAPLUS 6). Other models are not guaranteed; DATAPLUS 5, DATAPLUS 7, and all other generations remain untested on physical hardware.
 
 This repository contains the stable `XLLMI` app and the separate `XLMBM` benchmark build. The device-ready [`model.q12`](https://huggingface.co/ToTo-40417/EXLLM/tree/main/weights) is distributed on Hugging Face; place it at `MODELS/model.q12` in the device's internal storage. Model source and training instructions are available in [`exllm`](https://github.com/ToTo-40417/exllm). On the physical device, median TTFT was 23.711 seconds and post-TTFT generation was 0.52–0.55 token/s with Thinking disabled.
 
