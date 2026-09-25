@@ -19,6 +19,8 @@ LLMとは、Little Language Modelの略です。
 
 電子辞書用`model.q12`は[`ToTo-40417/EXLLM`](https://huggingface.co/ToTo-40417/EXLLM/tree/main/weights)で配布しています。端末ではダウンロードした`model.q12`を本体内蔵領域の`MODELS/model.q12`へ配置します。モデルのソースと学習手順は[`exllm`](https://github.com/ToTo-40417/exllm)を参照してください。
 
+`model.q12`は、モデルrepoの`python tools/export_exq12.py`で公開EXLLM8重みから同一SHA-256のファイルを再生成できます。
+
 ## 実機結果
 
 XD-B4800の5回測定では、Thinking OFF時のTTFT中央値は23.711秒、TTFT後の生成速度は0.52〜0.55 token/秒でした。詳細は[`docs/EXLLM-BENCHMARK-ARTICLE-NOTES.md`](docs/EXLLM-BENCHMARK-ARTICLE-NOTES.md)を参照してください。
@@ -104,6 +106,8 @@ The current version is `v1.1.0`, including the fix that feeds Thinking-mode draf
 Based on the supported scope of [`exword-template`](https://github.com/brain-hackers/exword-template) and the libexword installation path, DATAPLUS 5, 6, and 7 are theoretical targets. Boot, keyboard input, inference, and benchmark operation have been tested only on an XD-B4800 (DATAPLUS 6). Other models are not guaranteed; DATAPLUS 5, DATAPLUS 7, and all other generations remain untested on physical hardware.
 
 This repository contains the stable `XLLMI` app and the separate `XLMBM` benchmark build. The device-ready [`model.q12`](https://huggingface.co/ToTo-40417/EXLLM/tree/main/weights) is distributed on Hugging Face; place it at `MODELS/model.q12` in the device's internal storage. Model source and training instructions are available in [`exllm`](https://github.com/ToTo-40417/exllm). On the physical device, median TTFT was 23.711 seconds and post-TTFT generation was 0.52–0.55 token/s with Thinking disabled.
+
+The model repository's `python tools/export_exq12.py` deterministically rebuilds `model.q12` from the published EXLLM8 weights and verifies the release SHA-256.
 
 With Thinking enabled, the runtime generates a draft of up to 10 tokens and reuses those exact token IDs in a second single-turn USER prompt: `original question + "\n回答:" + draft`. EOS and sentence-ending punctuation may stop the draft early. The final pass keeps the same 48-token generation limit as normal mode. Within the fixed 128-token context, final-answer space takes priority, followed by the draft; the left side of an overlong original question is trimmed only when required.
 
